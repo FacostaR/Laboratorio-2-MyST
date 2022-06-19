@@ -10,39 +10,42 @@
 """
 
 import pandas as pd
+import numpy as np
 import data as dt
+import functions as fn
 
-# -- TEST 1 : 
-# verify that the script is being read
-print(dt.dict_test)
+# -- 1) // Lectura de datos // -- #
+ob_data = dt.order_books('files/orderbooks_05jul21.json')
+pt_data = dt.public_trades('files/btcusdt_binance.csv')
 
-# -- TEST 2 :
-# verify that installed pandas module works correctly
-df_dict_test = pd.DataFrame(dt.dict_test, index=[0, 1])
-print(df_dict_test)
 
-# -- TEST 3 :
-# verify you can use plotly and visualize plots in jupyter notebook
+# -- 2) // Obtener los mid price de los precios de ordenes
+ob_metrics = fn.order_book_metrics(ob_data)
+mid_prices = ob_metrics['Mid_Price']
 
-import chart_studio.plotly as py   # various tools (jupyter offline print)
-import plotly.graph_objects as go  # plotting engine
+# -- 3) // Obtener la diferencia de los precios 
+delta_p = [mid_prices[i+1] - mid_prices[i] for i in np.arange(0,len(mid_prices)-1)]
+delta2_p = np.diff(mid_prices)
 
-# example data
-df = pd.DataFrame({'column_a': [1, 2, 3, 4, 5], 'column_b': [1, 2, 3, 4, 5]})
-# basic plotly plot
-data = [go.Bar(x=df['column_a'], y=df['column_b'])]
-# instruction to view it inside jupyter
-py.iplot(data, filename='jupyter-basic_bar')
-# (alternatively) instruction to view it in web app of plotly
-py.plot(data)
+delta_p[89]
+delta2_p[89]
 
-# -- TEST 4 :
-# verify you can use plotly and visualize plots in web browser locally
+# -- 4) // Obtener ask y bid teoricos
+var_cov_matrix = np.cov(delta_p[1:len(delta_p)-1],delta_p[2:])[0] # Matriz de varianzas covarianzas
 
-import plotly.io as pio            # to define input-output of plots
-pio.renderers.default = "browser"  # to render the plot locally in your default web browser
+cov = var_cov_matrix[1]
+var = var_cov_matrix[0]
 
-# basic plotly plot
-plot_data = go.Figure(go.Bar(x=df['column_a'], y=df['column_b']))
-# instruction to view it in specified render (in this case browser)
-plot_data.show()
+C = np.sqrt(-cov)
+S = 2*C
+# ob_metrics['Spread']
+
+ask_teorico = [i+C for i in mid_prices]
+bid_teorico = [i-C for i in mid_prices]
+
+# -- 5) // Obtener ask y bid observados
+ob_ts = list(ob_data.keys())
+ask_observado = [ob_data[ob_ts[i]]['ask'][0]  for i in range(len(ob_ts))]
+ask_observado = [ob_data[ob_ts[i]]['bid'][0]  for i in range(len(ob_ts))]
+
+# Gráficas
