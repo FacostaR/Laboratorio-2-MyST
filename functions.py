@@ -1,11 +1,11 @@
 
 """
 # -- --------------------------------------------------------------------------------------------------- -- #
-# -- project: A SHORT DESCRIPTION OF THE PROJECT                                                         -- #
+# -- project: Lab 2 : High-Frequency Models                                                     -- #
 # -- script: functions.py : python script with general functions                                         -- #
-# -- author: YOUR GITHUB USER NAME                                                                       -- #
-# -- license: THE LICENSE TYPE AS STATED IN THE REPOSITORY                                               -- #
-# -- repository: YOUR REPOSITORY URL                                                                     -- #
+# -- author: if722399                                                                      -- #
+# -- license: GNU General Public License v3.0                                                  -- #
+# -- repository: https://github.com/if722399/Laboratorio-2-MyST.git                                                                   -- #
 # -- --------------------------------------------------------------------------------------------------- -- #
 """
 import data as dt
@@ -136,3 +136,24 @@ def public_trades_metrics(pt_data):
         'Difference in volume':pt_m8,'OHLCV':pt_m9,'TradeFlow Imbalance':pt_m10,'Estadistica':pt_m11}
 
         return final
+
+
+"""  -------------------- Lab2_(1) Martingala Model --------------------  """
+
+def Martingala(Order_Books, Mid_Prices):
+    ob_ts = list(Order_Books.keys())
+    l_ts = [pd.to_datetime(i_ts) for i_ts in ob_ts] 
+
+    df = pd.DataFrame({'Time':ob_ts, 'Minute':[i.minute for i in l_ts], 'Total':Mid_Prices})
+    dff = df.iloc[0:-1,0:]
+    dff['Martingala'] = [df['Total'][i] == df['Total'][i+1] for i in range(len(df['Total'])-1)] 
+    new_df = dff.groupby(['Minute']).count()['Total'].reset_index()
+    new_df['Martingala'] = dff.groupby(['Minute']).sum()['Martingala']
+    new_df['% Martingala'] = new_df['Martingala']/new_df['Total']
+    new_df['No Martingala'] = new_df['Total'] - new_df['Martingala']
+    new_df['% No Martingala'] = 1 - new_df['% Martingala']
+
+    return new_df
+
+
+"""  -------------------- Lab2_(2) Roll Model --------------------  """

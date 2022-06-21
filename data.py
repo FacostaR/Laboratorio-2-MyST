@@ -1,11 +1,11 @@
 
 """
 # -- --------------------------------------------------------------------------------------------------- -- #
-# -- project: Laboratorio 2 MyST                                                     -- #
-# -- script: main.py : python script with the main functionality                                                  -- #
+# -- project: Lab 2 : High-Frequency Models                                                   -- #
+# -- script: data.py : python script for data collection                                                  -- #
 # -- author: if722399                                                                    -- #
-# -- license: THE LICENSE TYPE AS STATED IN THE REPOSITORY                                               -- #
-# -- repository: https://github.com/if722399/Laboratorio-2-MyST.git                                                               -- #
+# -- license: GNU General Public License v3.0                                              -- #
+# -- repository: https://github.com/if722399/Laboratorio-2-MyST.git                                                          -- #
 # -- --------------------------------------------------------------------------------------------------- -- #
 """
 
